@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: #F5F6F2;
+  color: #16211D;
+  font-family: 'Inter', sans-serif;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ledger row entrance — new transactions ease in from the left, quietly */
+@keyframes ledger-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ledger-row-new {
+  animation: ledger-in 400ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledger-row-new {
+    animation: none;
+  }
+}
+
+/* Live pulse dot on the header — signals the feed is open/live ("wazi") */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot {
+    animation: none;
+  }
+}
