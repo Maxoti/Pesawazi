@@ -29,7 +29,7 @@ export class MpesaService {
   private get baseUrl(): string {
     return this.daraja.env === 'production'
       ? 'https://api.safaricom.co.ke'
-      : 'https://sandbox.safaricom.co.ke';
+      : 'http://sandbox.safaricom.co.ke';
   }
 
   /**
