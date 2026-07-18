@@ -91,7 +91,7 @@ export class MpesaService {
 
     try {
       const response = await axios.post<RegisterUrlResponse>(
-        `${this.baseUrl}/mpesa/c2b/v1/registerurl`,
+        `${this.baseUrl}/mpesa/c2b/v2/registerurl`,
         {
           ShortCode: shortcode,
           ResponseType: 'Completed',
