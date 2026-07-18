@@ -66,9 +66,13 @@ export class MpesaService {
       };
 
       return this.cachedToken.value;
-    } catch (error) {
-      this.logger.error('Failed to fetch Daraja access token', error as Error);
-      throw new HttpException('Failed to authenticate with Daraja', HttpStatus.BAD_GATEWAY);
+   } catch (error) {
+      const axiosError = error as import('axios').AxiosError;
+      this.logger.error(
+        'Failed to register C2B URLs',
+        JSON.stringify(axiosError.response?.data ?? axiosError.message),
+      );
+      throw new HttpException('Failed to register C2B URLs with Daraja', HttpStatus.BAD_GATEWAY);
     }
   }
 
