@@ -4,7 +4,7 @@ import { C2BCallbackDto } from './dto/c2b-callback.dto';
 import { MpesaService, RegisterUrlResponse } from './mpesa.service';
 import { TransactionsService } from '../transactions/transactions.service';
 
-@Controller('mpesa')
+@Controller('callbacks')
 export class MpesaController {
   constructor(
     private readonly mpesaService: MpesaService,

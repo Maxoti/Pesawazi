@@ -99,8 +99,8 @@ export class MpesaService {
         {
           ShortCode: shortcode,
           ResponseType: 'Completed',
-          ConfirmationURL: `${callbackBaseUrl}/mpesa/c2b/confirmation`,
-          ValidationURL: `${callbackBaseUrl}/mpesa/c2b/validation`,
+          ConfirmationURL: `${callbackBaseUrl}/callbacks/c2b/confirmation`,
+          ValidationURL: `${callbackBaseUrl}/callbacks/c2b/validation`,
         },
         { headers: { Authorization: `Bearer ${token}` } },
       );
