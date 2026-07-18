@@ -8,7 +8,7 @@ interface DarajaTokenResponse {
   expires_in: string;
 }
 
-interface RegisterUrlResponse {
+export interface RegisterUrlResponse {
   OriginatorConversationID?: string;
   ConversationID?: string;
   ResponseDescription?: string;
