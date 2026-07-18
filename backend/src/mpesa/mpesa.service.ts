@@ -67,13 +67,19 @@ export class MpesaService {
 
       return this.cachedToken.value;
     } catch (error) {
-      const axiosError = error as import('axios').AxiosError;
-      this.logger.error(
-        'Failed to fetch Daraja access token',
-        JSON.stringify(axiosError.response?.data ?? axiosError.message),
-      );
-      throw new HttpException('Failed to authenticate with Daraja', HttpStatus.BAD_GATEWAY);
-    }
+  const axiosError = error as import('axios').AxiosError;
+
+  this.logger.error('Failed to fetch Daraja access token');
+  this.logger.error(`Status: ${axiosError.response?.status ?? 'No status'}`);
+  this.logger.error(`URL: ${this.baseUrl}/oauth/v1/generate?grant_type=client_credentials`);
+  this.logger.error(`Response: ${JSON.stringify(axiosError.response?.data ?? null)}`);
+  this.logger.error(`Message: ${axiosError.message}`);
+
+  throw new HttpException(
+    'Failed to authenticate with Daraja',
+    HttpStatus.BAD_GATEWAY,
+  );
+}
   }
 
   /**
