@@ -20,7 +20,10 @@ export class MpesaController {
    */
   @Post('c2b/validation')
   @HttpCode(200)
-  validation(@Body() _payload: C2BCallbackDto) {
+  validation(@Body() payload: C2BCallbackDto) {
+    // TEMP DIAGNOSTIC — remove once callbacks are confirmed working
+    console.log('C2B VALIDATION HIT:', JSON.stringify(payload));
+
     return { ResultCode: 0, ResultDesc: 'Accepted' };
   }
 
@@ -31,22 +34,33 @@ export class MpesaController {
   @Post('c2b/confirmation')
   @HttpCode(200)
   async confirmation(@Body() payload: C2BCallbackDto) {
-    await this.transactionsService.recordFromCallback({
-      transId: payload.TransID,
-      transTime: payload.TransTime,
-      transactionType: payload.TransactionType,
-      transAmount: payload.TransAmount,
-      businessShortCode: payload.BusinessShortCode,
-      billRefNumber: payload.BillRefNumber ?? null,
-      invoiceNumber: payload.InvoiceNumber ?? null,
-      orgAccountBalance: payload.OrgAccountBalance ?? null,
-      thirdPartyTransId: payload.ThirdPartyTransID ?? null,
-      msisdn: payload.MSISDN,
-      firstName: payload.FirstName ?? null,
-      middleName: payload.MiddleName ?? null,
-      lastName: payload.LastName ?? null,
-      rawPayload: payload as unknown as Record<string, unknown>,
-    });
+    // TEMP DIAGNOSTIC — remove once callbacks are confirmed working
+    console.log('C2B CONFIRMATION HIT:', JSON.stringify(payload));
+
+    try {
+      await this.transactionsService.recordFromCallback({
+        transId: payload.TransID,
+        transTime: payload.TransTime,
+        transactionType: payload.TransactionType,
+        transAmount: payload.TransAmount,
+        businessShortCode: payload.BusinessShortCode,
+        billRefNumber: payload.BillRefNumber ?? null,
+        invoiceNumber: payload.InvoiceNumber ?? null,
+        orgAccountBalance: payload.OrgAccountBalance ?? null,
+        thirdPartyTransId: payload.ThirdPartyTransID ?? null,
+        msisdn: payload.MSISDN,
+        firstName: payload.FirstName ?? null,
+        middleName: payload.MiddleName ?? null,
+        lastName: payload.LastName ?? null,
+        rawPayload: payload as unknown as Record<string, unknown>,
+      });
+
+      // TEMP DIAGNOSTIC — remove once callbacks are confirmed working
+      console.log('C2B CONFIRMATION SAVED OK:', payload.TransID);
+    } catch (err) {
+      // TEMP DIAGNOSTIC — remove once callbacks are confirmed working
+      console.error('C2B CONFIRMATION SAVE FAILED:', err);
+    }
 
     // Safaricom just wants a 200 with this body — it doesn't do anything
     // with ResultCode/ResultDesc at the confirmation stage, but the shape
@@ -62,7 +76,7 @@ export class MpesaController {
    */
   @Get('c2b/register')
   @UseGuards(ApiKeyGuard)
-  async registerUrls() : Promise<RegisterUrlResponse> {
+  async registerUrls(): Promise<RegisterUrlResponse> {
     return this.mpesaService.registerC2BUrls();
   }
 }
