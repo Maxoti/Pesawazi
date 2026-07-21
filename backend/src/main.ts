@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // TEMP DIAGNOSTIC: log every single incoming request, before routing/guards/pipes
-  app.use((req, res, next) => {
+  app.use((req: any, res: any, next: any) => {
     console.log(`[INCOMING] ${req.method} ${req.originalUrl} from ${req.ip}`);
     next();
   });
