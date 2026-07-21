@@ -5,6 +5,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // TEMP DIAGNOSTIC: log every single incoming request, before routing/guards/pipes
+  app.use((req, res, next) => {
+    console.log(`[INCOMING] ${req.method} ${req.originalUrl} from ${req.ip}`);
+    next();
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
