@@ -5,6 +5,7 @@ import configuration from './config/configuration';
 import { Transaction } from './transactions/transaction.entity';
 import { TransactionsModule } from './transactions/transactions.module';
 import { MpesaModule } from './mpesa/mpesa.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { MpesaModule } from './mpesa/mpesa.module';
       }),
     }),
     TransactionsModule,
-    MpesaModule,
-  ],
+    MpesaModule,],
+    controllers: [AppController],
 })
 export class AppModule {}
