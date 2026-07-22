@@ -45,8 +45,8 @@ export class Transaction {
   @Column({ name: 'third_party_trans_id', type: 'varchar', length: 100, nullable: true })
   thirdPartyTransId!: string | null;
 
-  @Column({ name: 'msisdn', type: 'varchar', length: 20 })
-  msisdn!: string;
+ @Column({ name: 'msisdn', type: 'varchar', length: 100 })
+msisdn!: string;
 
   @Column({ name: 'first_name', type: 'varchar', length: 100, nullable: true })
   firstName!: string | null;
