@@ -94,10 +94,13 @@ export default function DashboardPage() {
 
   return (
     <main>
-      <div className="flex items-start justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
         <Header />
-        <div className="pt-1">
-          <DownloadButton transactions={transactions} />
+        <div className="sm:pt-1">
+          <DownloadButton
+            transactions={transactions}
+            totalAmount={summary?.totalAmount ?? 0}
+          />
         </div>
       </div>
 
