@@ -68,7 +68,9 @@ export function LedgerTable({
             {filtered.map((t) => (
               <div
                 key={t.id}
-                className={`px-5 py-4 ${newIds.has(t.id) ? 'ledger-row-new bg-teal-soft' : ''}`}
+                className={`px-5 py-4 transition-colors hover:bg-blue-50 ${
+                  newIds.has(t.id) ? 'ledger-row-new bg-teal-soft' : ''
+                }`}
               >
                 <div className="flex items-baseline justify-between">
                   <span className="text-ink font-medium">{payerName(t)}</span>
@@ -105,7 +107,7 @@ export function LedgerTable({
                 {filtered.map((t) => (
                   <tr
                     key={t.id}
-                    className={`border-b border-dashed border-line last:border-b-0 ${
+                    className={`border-b border-dashed border-line last:border-b-0 transition-colors hover:bg-blue-50 ${
                       newIds.has(t.id) ? 'ledger-row-new bg-teal-soft' : ''
                     }`}
                   >
