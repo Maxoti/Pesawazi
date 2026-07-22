@@ -153,29 +153,14 @@ export default function DashboardPage() {
       ) : (
         <div className="space-y-6">
           {summary && <SummaryCards summary={summary} />}
-          <LedgerTable transactions={transactions} newIds={newIds} />
-
-          <div className="flex items-center justify-between text-sm font-mono text-ink-soft pt-2">
-            <span>
-              Page {page} of {totalPages} &middot; {total} total
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => goToPage(page - 1)}
-                disabled={page <= 1 || loading}
-                className="px-3 py-1.5 rounded-md border border-line disabled:opacity-40 disabled:cursor-not-allowed hover:bg-paper-raised"
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => goToPage(page + 1)}
-                disabled={page >= totalPages || loading}
-                className="px-3 py-1.5 rounded-md border border-line disabled:opacity-40 disabled:cursor-not-allowed hover:bg-paper-raised"
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          <LedgerTable
+            transactions={transactions}
+            newIds={newIds}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            onPageChange={goToPage}
+          />
         </div>
       )}
     </main>
