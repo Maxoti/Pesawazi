@@ -9,13 +9,43 @@
 }
 
 body {
-  background-color: #F5F6F2;
+  background-color: #EEF0EA;
   color: #16211D;
   font-family: 'Inter', sans-serif;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* Receipt paper: faint vertical fibre texture + torn bottom edge */
+.receipt {
+  background-color: #FFFFFF;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(11, 110, 79, 0.015) 0px,
+    rgba(11, 110, 79, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  position: relative;
+}
+
+.receipt-torn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  height: 18px;
+  background: radial-gradient(circle at 10px 0, transparent 9px, #FFFFFF 9.5px);
+  background-size: 20px 20px;
+  background-repeat: repeat-x;
+}
+
+/* Perforation divider — used between receipt header and ledger rows */
+.perforation {
+  border-top: 1.5px dashed #C8CDC3;
 }
 
 /* Ledger row entrance — new transactions ease in from the left, quietly */
@@ -52,6 +82,26 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .pulse-dot {
+    animation: none;
+  }
+}
+
+@keyframes ripple {
+  from { transform: scale(1); opacity: 0.5; }
+  to { transform: scale(2.4); opacity: 0; }
+}
+
+.ripple::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: ripple 900ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple::before {
     animation: none;
   }
 }
