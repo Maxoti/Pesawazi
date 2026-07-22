@@ -7,9 +7,17 @@ import { formatKes, formatTransactionTime, maskMsisdn, payerName } from '@/lib/f
 export function LedgerTable({
   transactions,
   newIds,
+  page,
+  totalPages,
+  total,
+  onPageChange,
 }: {
   transactions: Transaction[];
   newIds: Set<string>;
+  page: number;
+  totalPages: number;
+  total: number;
+  onPageChange: (page: number) => void;
 }) {
   const [query, setQuery] = useState('');
 
@@ -40,7 +48,7 @@ export function LedgerTable({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by client name…"
+          placeholder="Search this page by client name…"
           className="w-full sm:w-72 rounded-md border border-line bg-white px-3 py-2 text-sm font-body text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-teal-dark"
         />
       </div>
@@ -48,7 +56,7 @@ export function LedgerTable({
       {filtered.length === 0 && (
         <div className="border border-t-0 border-line bg-paper-raised p-8 text-center">
           <p className="text-ink-soft font-body text-sm">
-            No transactions match &ldquo;{query}&rdquo;.
+            No transactions match &ldquo;{query}&rdquo; on this page.
           </p>
         </div>
       )}
@@ -56,7 +64,7 @@ export function LedgerTable({
       {filtered.length > 0 && (
         <>
           {/* Mobile: stacked receipt stubs */}
-          <div className="sm:hidden border border-t-0 border-line rounded-b-lg bg-paper-raised divide-y divide-dashed divide-line">
+          <div className="sm:hidden border border-t-0 border-line bg-paper-raised divide-y divide-dashed divide-line">
             {filtered.map((t) => (
               <div
                 key={t.id}
@@ -82,7 +90,7 @@ export function LedgerTable({
           </div>
 
           {/* Desktop / tablet: full table */}
-          <div className="hidden sm:block border border-t-0 border-line rounded-b-lg overflow-hidden bg-paper-raised">
+          <div className="hidden sm:block border border-t-0 border-line overflow-hidden bg-paper-raised">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-soft font-mono">
@@ -121,6 +129,29 @@ export function LedgerTable({
           </div>
         </>
       )}
+
+      {/* Pagination footer */}
+      <div className="border border-t-0 border-line rounded-b-lg bg-paper-raised px-6 py-4 flex items-center justify-between text-xs font-mono text-ink-soft">
+        <span>
+          Page {page} of {totalPages} &middot; {total} total
+        </span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => onPageChange(page - 1)}
+            disabled={page <= 1}
+            className="px-3 py-1.5 rounded-md border border-line text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-teal-soft transition-colors"
+          >
+            Prev
+          </button>
+          <button
+            onClick={() => onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            className="px-3 py-1.5 rounded-md border border-line text-ink disabled:opacity-40 disabled:cursor-not-allowed hover:bg-teal-soft transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

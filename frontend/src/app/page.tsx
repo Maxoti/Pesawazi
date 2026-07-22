@@ -10,27 +10,39 @@ import { DownloadButton } from '@/components/DownloadButton';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
 const FALLBACK_POLL_MS = 60000;
+const PAGE_SIZE = 25;
 
 export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasNewOffPage, setHasNewOffPage] = useState(false);
   const knownIds = useRef<Set<string>>(new Set());
   const socketRef = useRef<Socket | null>(null);
+  const pageRef = useRef(1);
 
-  const loadInitial = useCallback(async () => {
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
+  const loadPage = useCallback(async (targetPage: number) => {
+    setLoading(true);
     try {
       const [txRes, summaryRes] = await Promise.all([
-        fetchTransactions({ page: 1, pageSize: 25 }),
+        fetchTransactions({ page: targetPage, pageSize: PAGE_SIZE }),
         fetchSummary(),
       ]);
 
       txRes.items.forEach((t) => knownIds.current.add(t.id));
       setTransactions(txRes.items);
+      setTotal(txRes.total);
       setSummary(summaryRes);
       setError(null);
+      if (targetPage === 1) setHasNewOffPage(false);
     } catch (err) {
       setError(
         err instanceof Error
@@ -54,7 +66,7 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    loadInitial();
+    loadPage(1);
 
     const socket = io(API_BASE_URL, {
       transports: ['websocket'],
@@ -70,9 +82,9 @@ export default function DashboardPage() {
 
     socket.on('transaction:new', (transaction: Transaction) => {
       if (knownIds.current.has(transaction.id)) return;
-
       knownIds.current.add(transaction.id);
-      setTransactions((prev) => [transaction, ...prev].slice(0, 25));
+
+      setTotal((prev) => prev + 1);
       setSummary((prev) =>
         prev
           ? {
@@ -81,16 +93,30 @@ export default function DashboardPage() {
             }
           : prev,
       );
-      flashNew(transaction.id);
+
+      if (pageRef.current === 1) {
+        setTransactions((prev) => [transaction, ...prev].slice(0, PAGE_SIZE));
+        flashNew(transaction.id);
+      } else {
+        setHasNewOffPage(true);
+      }
     });
 
-    const fallback = setInterval(loadInitial, FALLBACK_POLL_MS);
+    const fallback = setInterval(() => loadPage(pageRef.current), FALLBACK_POLL_MS);
 
     return () => {
       socket.disconnect();
       clearInterval(fallback);
     };
-  }, [loadInitial, flashNew]);
+  }, [loadPage, flashNew]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const goToPage = (target: number) => {
+    const clamped = Math.min(Math.max(target, 1), totalPages);
+    setPage(clamped);
+    loadPage(clamped);
+  };
 
   return (
     <main>
@@ -110,12 +136,46 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {loading && !error ? (
+      {hasNewOffPage && page !== 1 && (
+        <div className="mb-6 border border-teal-dark/40 bg-teal-soft text-teal-dark rounded-lg px-4 py-3 text-sm flex items-center justify-between">
+          <span>New transactions have arrived.</span>
+          <button
+            onClick={() => goToPage(1)}
+            className="font-medium underline underline-offset-2"
+          >
+            Jump to latest
+          </button>
+        </div>
+      )}
+
+      {loading && !error && transactions.length === 0 ? (
         <p className="text-page-ink-soft text-sm">Loading ledger…</p>
       ) : (
         <div className="space-y-6">
           {summary && <SummaryCards summary={summary} />}
           <LedgerTable transactions={transactions} newIds={newIds} />
+
+          <div className="flex items-center justify-between text-sm font-mono text-ink-soft pt-2">
+            <span>
+              Page {page} of {totalPages} &middot; {total} total
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1 || loading}
+                className="px-3 py-1.5 rounded-md border border-line disabled:opacity-40 disabled:cursor-not-allowed hover:bg-paper-raised"
+              >
+                Prev
+              </button>
+              <button
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages || loading}
+                className="px-3 py-1.5 rounded-md border border-line disabled:opacity-40 disabled:cursor-not-allowed hover:bg-paper-raised"
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>
