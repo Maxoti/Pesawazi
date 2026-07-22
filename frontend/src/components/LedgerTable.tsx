@@ -68,7 +68,7 @@ export function LedgerTable({
             {filtered.map((t) => (
               <div
                 key={t.id}
-                className={`px-5 py-4 transition-colors hover:bg-blue-50 ${
+                className={`relative px-5 py-4 border-l-4 border-l-transparent transition-all duration-150 hover:border-l-blue-400 hover:bg-blue-50/60 hover:shadow-[inset_0_0_0_1px_rgba(59,130,246,0.15)] ${
                   newIds.has(t.id) ? 'ledger-row-new bg-teal-soft' : ''
                 }`}
               >
@@ -93,7 +93,7 @@ export function LedgerTable({
 
           {/* Desktop / tablet: full table */}
           <div className="hidden sm:block border border-t-0 border-line overflow-hidden bg-paper-raised">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm border-separate border-spacing-0">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-soft font-mono">
                   <th className="px-6 py-4 font-medium">Time</th>
@@ -107,21 +107,23 @@ export function LedgerTable({
                 {filtered.map((t) => (
                   <tr
                     key={t.id}
-                    className={`border-b border-dashed border-line last:border-b-0 transition-colors hover:bg-blue-50 ${
+                    className={`group border-b border-dashed border-line last:border-b-0 border-l-4 border-l-transparent transition-all duration-150 hover:border-l-blue-400 hover:bg-blue-50/60 hover:shadow-[inset_0_0_0_1px_rgba(59,130,246,0.15)] ${
                       newIds.has(t.id) ? 'ledger-row-new bg-teal-soft' : ''
                     }`}
                   >
                     <td className="px-6 py-4 font-mono text-ink-soft whitespace-nowrap">
                       {formatTransactionTime(t.transTime)}
                     </td>
-                    <td className="px-6 py-4 text-ink font-medium">{payerName(t)}</td>
+                    <td className="px-6 py-4 text-ink font-medium group-hover:text-blue-900 transition-colors">
+                      {payerName(t)}
+                    </td>
                     <td className="px-6 py-4 font-mono text-ink-soft">
                       {maskMsisdn(t.msisdn)}
                     </td>
                     <td className="px-6 py-4 font-mono text-ink-soft">
                       {t.billRefNumber || '—'}
                     </td>
-                    <td className="px-6 py-4 font-mono tabular text-right text-teal-dark font-semibold">
+                    <td className="px-6 py-4 font-mono tabular text-right text-teal-dark font-semibold group-hover:text-blue-700 transition-colors">
                       {formatKes(t.transAmount)}
                     </td>
                   </tr>
