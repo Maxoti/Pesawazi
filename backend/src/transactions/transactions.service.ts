@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './transaction.entity';
+import { TransactionsGateway } from './transactions.gateway';
 
 export interface RecordTransactionInput {
   transId: string;
@@ -35,6 +36,7 @@ export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
     private readonly transactionsRepo: Repository<Transaction>,
+    private readonly transactionsGateway: TransactionsGateway,
   ) {}
 
   /**
@@ -69,7 +71,11 @@ export class TransactionsService {
       rawPayload: input.rawPayload,
     });
 
-    await this.transactionsRepo.save(entity);
+    const saved = await this.transactionsRepo.save(entity);
+
+    // Push to any connected dashboards immediately — no need to wait for polling.
+    this.transactionsGateway.emitNewTransaction(saved);
+
     return { created: true };
   }
 
