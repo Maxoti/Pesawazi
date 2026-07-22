@@ -6,9 +6,9 @@ import { fetchSummary, fetchTransactions, SummaryResponse, Transaction } from '@
 import { Header } from '@/components/Header';
 import { SummaryCards } from '@/components/SummaryCards';
 import { LedgerTable } from '@/components/LedgerTable';
+import { DownloadButton } from '@/components/DownloadButton';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
-// Fallback poll in case the socket connection drops and doesn't reconnect in time.
 const FALLBACK_POLL_MS = 60000;
 
 export default function DashboardPage() {
@@ -69,7 +69,7 @@ export default function DashboardPage() {
     });
 
     socket.on('transaction:new', (transaction: Transaction) => {
-      if (knownIds.current.has(transaction.id)) return; // dedupe safety
+      if (knownIds.current.has(transaction.id)) return;
 
       knownIds.current.add(transaction.id);
       setTransactions((prev) => [transaction, ...prev].slice(0, 25));
@@ -84,8 +84,6 @@ export default function DashboardPage() {
       flashNew(transaction.id);
     });
 
-    // Safety net: re-sync from REST periodically in case an event was missed
-    // (e.g. brief disconnect window).
     const fallback = setInterval(loadInitial, FALLBACK_POLL_MS);
 
     return () => {
@@ -96,7 +94,12 @@ export default function DashboardPage() {
 
   return (
     <main>
-      <Header />
+      <div className="flex items-start justify-between gap-4 mb-8">
+        <Header />
+        <div className="pt-1">
+          <DownloadButton transactions={transactions} />
+        </div>
+      </div>
 
       {error && (
         <div className="mb-6 border border-amber/40 bg-amber-soft text-amber rounded-lg px-4 py-3 text-sm">
@@ -105,7 +108,7 @@ export default function DashboardPage() {
       )}
 
       {loading && !error ? (
-        <p className="text-ink-soft text-sm">Loading ledger…</p>
+        <p className="text-page-ink-soft text-sm">Loading ledger…</p>
       ) : (
         <div className="space-y-6">
           {summary && <SummaryCards summary={summary} />}

@@ -5,12 +5,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #EEF0EA;
-  color: #16211D;
+  background-color: #0E1613;
+  background-image: radial-gradient(circle at 50% 0%, rgba(11, 110, 79, 0.08), transparent 60%);
+  color: #F5F6F2;
   font-family: 'Inter', sans-serif;
 }
 
@@ -18,7 +19,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Receipt paper: faint vertical fibre texture + torn bottom edge */
 .receipt {
   background-color: #FFFFFF;
   background-image: repeating-linear-gradient(
@@ -43,21 +43,13 @@ body {
   background-repeat: repeat-x;
 }
 
-/* Perforation divider — used between receipt header and ledger rows */
 .perforation {
   border-top: 1.5px dashed #C8CDC3;
 }
 
-/* Ledger row entrance — new transactions ease in from the left, quietly */
 @keyframes ledger-in {
-  from {
-    opacity: 0;
-    transform: translateX(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .ledger-row-new {
@@ -65,12 +57,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ledger-row-new {
-    animation: none;
-  }
+  .ledger-row-new { animation: none; }
 }
 
-/* Live pulse dot on the header — signals the feed is open/live ("wazi") */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
@@ -81,9 +70,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot {
-    animation: none;
-  }
+  .pulse-dot { animation: none; }
 }
 
 @keyframes ripple {
@@ -101,7 +88,5 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ripple::before {
-    animation: none;
-  }
+  .ripple::before { animation: none; }
 }

@@ -8,8 +8,10 @@ module.exports = {
         'paper-raised': '#FFFFFF',
         ink: '#16211D',
         'ink-soft': '#4B5951',
+        'page-ink': '#F5F6F2',
+        'page-ink-soft': '#9BA79E',
         teal: {
-          DEFAULT: '#0B6E4F',
+          DEFAULT: '#12B579',
           dark: '#084F39',
           soft: '#E4F0EA',
         },
