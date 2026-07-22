@@ -2,13 +2,16 @@ export function Header({ shortcodeLabel }: { shortcodeLabel?: string }) {
   return (
     <header className="flex items-start justify-between mb-10">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-ink-soft font-mono mb-2">
+        <p className="text-xs uppercase tracking-[0.2em] text-page-ink-soft font-mono mb-2">
           Till receipt · live feed
         </p>
-        <h1 className="font-display text-4xl font-semibold text-ink tracking-tight">
-          pesa<span className="text-teal">wazi</span>
+        <h1 className="font-display text-4xl font-semibold text-white tracking-tight flex items-center gap-2">
+          pesa
+          <span className="inline-flex items-center justify-center border-2 border-gold text-gold rounded-full px-4 py-0.5 text-3xl">
+            wazi
+          </span>
         </h1>
-        <p className="text-sm text-ink-soft mt-1 font-mono">
+        <p className="text-sm text-page-ink-soft mt-2 font-mono">
           {shortcodeLabel ?? 'Real-time transaction ledger'}
         </p>
       </div>

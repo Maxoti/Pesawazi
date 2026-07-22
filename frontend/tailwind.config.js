@@ -9,7 +9,16 @@ module.exports = {
         ink: '#16211D',
         'ink-soft': '#4B5951',
         'page-ink': '#F5F6F2',
-        'page-ink-soft': '#9BA79E',
+        'page-ink-soft': '#A9B3D4',
+        brand: {
+          DEFAULT: '#1B2A6B',
+          dark: '#121C4A',
+          soft: '#28398C',
+        },
+        gold: {
+          DEFAULT: '#F4B400',
+          dark: '#8A6100',
+        },
         teal: {
           DEFAULT: '#12B579',
           dark: '#084F39',
