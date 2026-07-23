@@ -1,7 +1,25 @@
-import { SummaryResponse } from '@/lib/api';
+import { SummaryRange, SummaryResponse } from '@/lib/api';
 import { formatKes } from '@/lib/format';
 
-export function SummaryCards({ summary }: { summary: SummaryResponse }) {
+const RANGE_OPTIONS: { value: SummaryRange; label: string }[] = [
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: '7 Days' },
+  { value: 'all', label: 'All time' },
+];
+
+const RANGE_CAPTION: Record<SummaryRange, string> = {
+  today: "today's takings",
+  week: 'last 7 days',
+  all: 'since you went live',
+};
+
+export function SummaryCards({
+  summary,
+  onRangeChange,
+}: {
+  summary: SummaryResponse;
+  onRangeChange: (range: SummaryRange) => void;
+}) {
   const average =
     summary.transactionCount > 0
       ? summary.totalAmount / summary.transactionCount
@@ -21,6 +39,32 @@ export function SummaryCards({ summary }: { summary: SummaryResponse }) {
       </div>
 
       <div className="px-8 py-8">
+        {/* Range toggle */}
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-ink-soft font-mono">
+            Showing: {RANGE_CAPTION[summary.range]}
+          </p>
+          <div className="inline-flex rounded-md border border-line bg-paper-raised p-0.5 font-mono text-xs">
+            {RANGE_OPTIONS.map((opt) => {
+              const active = summary.range === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => onRangeChange(opt.value)}
+                  aria-pressed={active}
+                  className={`px-3 py-1.5 rounded transition-colors ${
+                    active
+                      ? 'bg-teal-dark text-white'
+                      : 'text-ink-soft hover:text-ink hover:bg-white'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex items-end justify-between flex-wrap gap-8">
           {/* TOTAL RECEIVED */}
           <div className="flex-1 min-w-[200px]">

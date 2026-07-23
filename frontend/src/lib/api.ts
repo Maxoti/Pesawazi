@@ -21,7 +21,10 @@ export interface TransactionsResponse {
   pageSize: number;
 }
 
+export type SummaryRange = 'today' | 'week' | 'all';
+
 export interface SummaryResponse {
+  range: SummaryRange;
   transactionCount: number;
   totalAmount: number;
 }
@@ -53,6 +56,7 @@ export function fetchTransactions(params: {
   return apiFetch<TransactionsResponse>(`/transactions${qs ? `?${qs}` : ''}`);
 }
 
-export function fetchSummary(): Promise<SummaryResponse> {
-  return apiFetch<SummaryResponse>('/transactions/summary');
+export function fetchSummary(range: SummaryRange = 'all'): Promise<SummaryResponse> {
+  const query = new URLSearchParams({ range });
+  return apiFetch<SummaryResponse>(`/transactions/summary?${query.toString()}`);
 }

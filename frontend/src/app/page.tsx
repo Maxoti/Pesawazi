@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { fetchSummary, fetchTransactions, SummaryResponse, Transaction } from '@/lib/api';
+import {
+  fetchSummary,
+  fetchTransactions,
+  SummaryRange,
+  SummaryResponse,
+  Transaction,
+} from '@/lib/api';
 import { Header } from '@/components/Header';
 import { SummaryCards } from '@/components/SummaryCards';
 import { LedgerTable } from '@/components/LedgerTable';
@@ -17,6 +23,7 @@ export default function DashboardPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
+  const [summaryRange, setSummaryRange] = useState<SummaryRange>('today');
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,17 +31,22 @@ export default function DashboardPage() {
   const knownIds = useRef<Set<string>>(new Set());
   const socketRef = useRef<Socket | null>(null);
   const pageRef = useRef(1);
+  const summaryRangeRef = useRef<SummaryRange>('today');
 
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
+
+  useEffect(() => {
+    summaryRangeRef.current = summaryRange;
+  }, [summaryRange]);
 
   const loadPage = useCallback(async (targetPage: number) => {
     setLoading(true);
     try {
       const [txRes, summaryRes] = await Promise.all([
         fetchTransactions({ page: targetPage, pageSize: PAGE_SIZE }),
-        fetchSummary(),
+        fetchSummary(summaryRangeRef.current),
       ]);
 
       txRes.items.forEach((t) => knownIds.current.add(t.id));
@@ -51,6 +63,26 @@ export default function DashboardPage() {
       );
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Range changes only need a fresh summary — no need to reload the
+   * (unrelated) paginated ledger underneath it.
+   */
+  const handleRangeChange = useCallback(async (range: SummaryRange) => {
+    setSummaryRange(range);
+    summaryRangeRef.current = range;
+    try {
+      const summaryRes = await fetchSummary(range);
+      setSummary(summaryRes);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not reach the Pesawazi backend.',
+      );
     }
   }, []);
 
@@ -85,9 +117,14 @@ export default function DashboardPage() {
       knownIds.current.add(transaction.id);
 
       setTotal((prev) => prev + 1);
+
+      // A brand-new transaction just happened "now", so it always falls
+      // inside whichever window is currently selected (today/week/all) —
+      // safe to optimistically bump the summary regardless of range.
       setSummary((prev) =>
         prev
           ? {
+              ...prev,
               transactionCount: prev.transactionCount + 1,
               totalAmount: prev.totalAmount + Number(transaction.transAmount),
             }
@@ -152,7 +189,9 @@ export default function DashboardPage() {
         <p className="text-page-ink-soft text-sm">Loading ledger…</p>
       ) : (
         <div className="space-y-6">
-          {summary && <SummaryCards summary={summary} />}
+          {summary && (
+            <SummaryCards summary={summary} onRangeChange={handleRangeChange} />
+          )}
           <LedgerTable
             transactions={transactions}
             newIds={newIds}
