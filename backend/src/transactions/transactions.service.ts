@@ -29,6 +29,31 @@ export interface ListTransactionsQuery {
   msisdn?: string;
 }
 
+export type SummaryRange = 'today' | 'week' | 'all';
+
+export interface SummaryQuery {
+  range?: SummaryRange;
+}
+
+// Kenya is UTC+3 year-round (no DST), so this can be a fixed offset.
+const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+/**
+ * Returns the UTC instant corresponding to local midnight in Nairobi,
+ * `daysAgo` days before today. e.g. daysAgo=0 -> start of today (Nairobi),
+ * daysAgo=6 -> start of the day 6 days ago (Nairobi) — useful for a
+ * rolling 7-day "this week" window.
+ */
+function nairobiMidnightUtc(daysAgo: number): Date {
+  const nowNairobi = new Date(Date.now() + NAIROBI_OFFSET_MS);
+  const y = nowNairobi.getUTCFullYear();
+  const m = nowNairobi.getUTCMonth();
+  const d = nowNairobi.getUTCDate();
+
+  // Midnight in Nairobi, `daysAgo` days back, expressed as a UTC instant.
+  return new Date(Date.UTC(y, m, d - daysAgo, 0, 0, 0) - NAIROBI_OFFSET_MS);
+}
+
 @Injectable()
 export class TransactionsService {
   private readonly logger = new Logger(TransactionsService.name);
@@ -103,14 +128,32 @@ export class TransactionsService {
     return { items, total, page, pageSize };
   }
 
-  async summary() {
-    const raw = await this.transactionsRepo
+  /**
+   * Totals for a given window, computed in Nairobi local time so "today"
+   * matches what a till owner actually means when they say "today's
+   * takings" — not a UTC day, which would cut off at 3am local time.
+   */
+  async summary(query: SummaryQuery = {}) {
+    const range = query.range ?? 'all';
+
+    const qb = this.transactionsRepo
       .createQueryBuilder('t')
       .select('COUNT(*)', 'count')
-      .addSelect('COALESCE(SUM(t.transAmount), 0)', 'total')
-      .getRawOne<{ count: string; total: string }>();
+      .addSelect('COALESCE(SUM(t.transAmount), 0)', 'total');
+
+    if (range === 'today') {
+      qb.where('t.receivedAt >= :from', { from: nairobiMidnightUtc(0) });
+    } else if (range === 'week') {
+      // Rolling 7-day window (today + previous 6 days), not calendar week —
+      // simpler to reason about and avoids Monday-vs-Sunday debates.
+      qb.where('t.receivedAt >= :from', { from: nairobiMidnightUtc(6) });
+    }
+    // range === 'all' -> no filter
+
+    const raw = await qb.getRawOne<{ count: string; total: string }>();
 
     return {
+      range,
       transactionCount: Number(raw?.count ?? 0),
       totalAmount: Number(raw?.total ?? 0),
     };

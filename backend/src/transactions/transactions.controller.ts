@@ -1,6 +1,8 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiKeyGuard } from '../common/guards/api-key.guard';
-import { TransactionsService } from './transactions.service';
+import { SummaryRange, TransactionsService } from './transactions.service';
+
+const VALID_RANGES: SummaryRange[] = ['today', 'week', 'all'];
 
 @Controller('transactions')
 @UseGuards(ApiKeyGuard)
@@ -25,7 +27,11 @@ export class TransactionsController {
   }
 
   @Get('summary')
-  summary() {
-    return this.transactionsService.summary();
+  summary(@Query('range') range?: string) {
+    const safeRange: SummaryRange = VALID_RANGES.includes(range as SummaryRange)
+      ? (range as SummaryRange)
+      : 'all';
+
+    return this.transactionsService.summary({ range: safeRange });
   }
 }
