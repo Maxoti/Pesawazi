@@ -38,7 +38,7 @@ export function SummaryCards({
         </div>
       </div>
 
-      <div className="px-8 py-8">
+      <div className="px-5 sm:px-8 py-6 sm:py-8">
         {/* Range toggle */}
         <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
           <p className="text-xs uppercase tracking-[0.2em] text-ink-soft font-mono">
@@ -67,9 +67,9 @@ export function SummaryCards({
 
         <div className="flex items-end justify-between flex-wrap gap-8">
           {/* TOTAL RECEIVED */}
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-0 sm:min-w-[200px]">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
+              <span className="relative flex h-2 w-2 shrink-0">
                 <span className="pulse-dot absolute inline-flex h-full w-full rounded-full bg-teal-dark animate-ping opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-dark" />
               </span>
@@ -78,10 +78,10 @@ export function SummaryCards({
               </p>
             </div>
 
-            <div className="mt-3 flex items-center gap-3">
-              <div className="shrink-0 w-11 h-11 rounded-full bg-teal-dark/10 flex items-center justify-center">
+            <div className="mt-3 flex items-center gap-3 min-w-0">
+              <div className="shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-teal-dark/10 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-teal-dark"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-teal-dark"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -92,12 +92,12 @@ export function SummaryCards({
                   <path d="M6 6v12M18 6v12" />
                 </svg>
               </div>
-              <p className="font-mono text-5xl tabular text-ink font-medium">
+              <p className="font-mono text-3xl sm:text-4xl md:text-5xl tabular text-ink font-medium truncate">
                 {formatKes(summary.totalAmount)}
               </p>
             </div>
 
-            <p className="mt-2 ml-14 text-xs font-mono text-ink-soft">
+            <p className="mt-2 ml-11 sm:ml-14 text-xs font-mono text-ink-soft">
               avg {formatKes(average)} / transaction
             </p>
           </div>
@@ -105,18 +105,18 @@ export function SummaryCards({
           <div className="hidden sm:block self-stretch w-px bg-line" />
 
           {/* TRANSACTIONS */}
-          <div className="text-right">
+          <div className="text-right min-w-0">
             <p className="text-xs uppercase tracking-[0.2em] text-ink-soft font-mono">
               Transactions
             </p>
 
-            <div className="mt-3 flex items-center justify-end gap-3">
-              <p className="font-mono text-5xl tabular text-teal-dark font-medium">
+            <div className="mt-3 flex items-center justify-end gap-3 min-w-0">
+              <p className="font-mono text-3xl sm:text-4xl md:text-5xl tabular text-teal-dark font-medium truncate">
                 {summary.transactionCount.toLocaleString('en-KE')}
               </p>
-              <div className="shrink-0 w-11 h-11 rounded-full bg-teal-dark/10 flex items-center justify-center">
+              <div className="shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-teal-dark/10 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-teal-dark"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-teal-dark"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
